@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Neon Vice — GTA 6-style Cover Maker</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header class="topbar">
+  <div class="brand">NEON <span>VICE</span></div>
+  <div class="tagline">Turn a photo + a caption into GTA&nbsp;6-style cover art. 100% offline &mdash; photos never leave your machine.</div>
+</header>
+
+<main class="editor">
+  <section class="controls" aria-label="Cover controls">
+    <h2>Photos</h2>
+    <div id="thumbs" class="thumbs"></div>
+    <div class="uploads">
+      <label class="upload">Upload 1 <input id="upload-1" type="file" accept="image/*"></label>
+      <label class="upload">Upload 2 <input id="upload-2" type="file" accept="image/*"></label>
+      <label class="upload">Upload 3 <input id="upload-3" type="file" accept="image/*"></label>
+    </div>
+    <label class="check"><input id="autofill" type="checkbox" checked> One photo fills the whole grid (varied crops)</label>
+
+    <h2>Layout</h2>
+    <div class="btn-row">
+      <button type="button" data-layout="hero2" class="active">Hero + 2</button>
+      <button type="button" data-layout="triptych">Triptych</button>
+      <button type="button" data-layout="quad">Quad</button>
+      <button type="button" data-layout="solo">Solo</button>
+    </div>
+
+    <h2 id="panel-label">Panel 1 of 3</h2>
+    <p class="hint">Click a panel on the cover to pick it. Drag it to pan, scroll to zoom.</p>
+    <label class="field">Photo in this panel
+      <select id="panel-photo"></select>
+    </label>
+    <label class="field">Zoom <span id="zoom-value">1.00&times;</span>
+      <input id="panel-zoom" type="range" min="1" max="3" step="0.01" value="1">
+    </label>
+    <button type="button" id="panel-reset" class="ghost">Reset this panel&rsquo;s crop</button>
+
+    <h2>Words</h2>
+    <label class="field">Title
+      <input id="title-input" type="text" value="NEON VICE" maxlength="24">
+    </label>
+    <label class="field">Subtitle
+      <input id="subtitle-input" type="text" value="VICE CITY &bull; LEONIDA" maxlength="48">
+    </label>
+    <label class="field">Credit
+      <input id="credit-input" type="text" value="A NEON VICE ORIGINAL &mdash; MADE OFFLINE" maxlength="64">
+    </label>
+
+    <h2>Grade</h2>
+    <div class="btn-row">
+      <button type="button" data-grade="sunset" class="active">Sunset</button>
+      <button type="button" data-grade="neon">Neon</button>
+      <button type="button" data-grade="noir">Noir</button>
+      <button type="button" data-grade="vice">Vice</button>
+    </div>
+
+    <h2>Export PNG</h2>
+    <div class="btn-row export-row">
+      <button type="button" data-export="1080x1080">1080 &times; 1080</button>
+      <button type="button" data-export="1080x1350">1080 &times; 1350</button>
+      <button type="button" data-export="1920x1080">1920 &times; 1080</button>
+      <button type="button" data-export="1080x1920">1080 &times; 1920</button>
+    </div>
+    <p id="status" class="status" role="status">Loading&hellip;</p>
+  </section>
+
+  <section class="preview" aria-label="Cover preview">
+    <canvas id="cover-canvas" width="1080" height="1350"></canvas>
+  </section>
+</main>
+
+<section id="export-view" class="export-view" hidden>
+  <img id="export-img" alt="Cover exported by Neon Vice">
+  <p id="export-meta" class="export-meta"></p>
+</section>
+
+<footer class="foot">
+  Neon Vice &mdash; original cover art, drawn from scratch. No Rockstar logo, artwork or fonts.
+</footer>
+
+<script src="src/cover.js"></script>
+<script src="src/main.js"></script>
+<script src="src/shots.js"></script>
+</body>
+</html>
