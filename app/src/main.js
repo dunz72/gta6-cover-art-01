@@ -138,6 +138,8 @@
     return -1;
   }
 
+  function clamp(v, lo, hi) { return Math.max(lo, Math.min(hi, v)); }
+
   function wireCanvas() {
     var dragging = false;
     var last = null;
@@ -177,8 +179,6 @@
       renderPreview();
     }, { passive: false });
   }
-
-  function clamp(v, lo, hi) { return Math.max(lo, Math.min(hi, v)); }
 
   function wireControls() {
     // Layout buttons.

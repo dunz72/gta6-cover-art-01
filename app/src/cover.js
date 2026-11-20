@@ -70,7 +70,7 @@
       subtitle: 'VICE CITY \u2022 LEONIDA',
       credit: 'A NEON VICE ORIGINAL \u2014 MADE OFFLINE',
       autofill: true,
-      // photos: key -> HTMLImageElement (or {width,height,draw} for tests)
+      // photos: key -> HTMLImageElement
       photos: {},
       // one entry per panel slot; photo is a key of photos or null
       panels: [
@@ -194,7 +194,7 @@
     var grade = GRADES[state.grade] || GRADES.sunset;
     var bandY = h * 0.78;
     var bandH = h - bandY;
-    // Band fill: vertical sunset gradient.
+    // Band fill: vertical gradient.
     var g = ctx.createLinearGradient(0, bandY, 0, h);
     g.addColorStop(0, grade.band[0]);
     g.addColorStop(0.55, grade.band[1]);
