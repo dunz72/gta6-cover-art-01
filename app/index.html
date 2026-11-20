@@ -1,91 +1,112 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Neon Vice — GTA 6-style Cover Maker</title>
+<title>Neon Vice — Cover Art Studio</title>
+<link rel="icon" href="data:,">
 <link rel="stylesheet" href="style.css">
 </head>
 <body>
 <header class="topbar">
-  <div class="brand">NEON <span>VICE</span></div>
-  <div class="tagline">Turn a photo + a caption into GTA&nbsp;6-style cover art. 100% offline &mdash; photos never leave your machine.</div>
+  <div class="brand">
+    <span class="brand-mark">NV</span>
+    <div>
+      <h1>NEON VICE</h1>
+      <p>Cover Art Studio &mdash; turn your photo into poster art, offline</p>
+    </div>
+  </div>
+  <div class="top-actions">
+    <button id="shuffleBtn" type="button" class="btn ghost" title="Shuffle layout and grade">Shuffle look</button>
+    <button id="exportBtn" type="button" class="btn primary">Export PNG</button>
+  </div>
 </header>
 
-<main class="editor">
-  <section class="controls" aria-label="Cover controls">
-    <h2>Photos</h2>
-    <div id="thumbs" class="thumbs"></div>
-    <div class="uploads">
-      <label class="upload">Upload 1 <input id="upload-1" type="file" accept="image/*"></label>
-      <label class="upload">Upload 2 <input id="upload-2" type="file" accept="image/*"></label>
-      <label class="upload">Upload 3 <input id="upload-3" type="file" accept="image/*"></label>
+<main class="studio">
+  <section class="preview-col">
+    <div class="preview-frame">
+      <canvas id="coverCanvas" width="1080" height="1350" aria-label="Live cover preview"></canvas>
+      <p class="preview-hint">Click a panel to select it, then drag the photo inside it. Sliders on the right fine-tune the crop.</p>
     </div>
-    <label class="check"><input id="autofill" type="checkbox" checked> One photo fills the whole grid (varied crops)</label>
-
-    <h2>Layout</h2>
-    <div class="btn-row">
-      <button type="button" data-layout="hero2" class="active">Hero + 2</button>
-      <button type="button" data-layout="triptych">Triptych</button>
-      <button type="button" data-layout="quad">Quad</button>
-      <button type="button" data-layout="solo">Solo</button>
+    <div class="size-row" role="group" aria-label="Export size">
+      <span class="row-label">Export size</span>
+      <button type="button" class="chip size-chip" data-size="1080x1080">1080 &times; 1080</button>
+      <button type="button" class="chip size-chip active" data-size="1080x1350">1080 &times; 1350</button>
+      <button type="button" class="chip size-chip" data-size="1920x1080">1920 &times; 1080</button>
     </div>
-
-    <h2 id="panel-label">Panel 1 of 3</h2>
-    <p class="hint">Click a panel on the cover to pick it. Drag it to pan, scroll to zoom.</p>
-    <label class="field">Photo in this panel
-      <select id="panel-photo"></select>
-    </label>
-    <label class="field">Zoom <span id="zoom-value">1.00&times;</span>
-      <input id="panel-zoom" type="range" min="1" max="3" step="0.01" value="1">
-    </label>
-    <button type="button" id="panel-reset" class="ghost">Reset this panel&rsquo;s crop</button>
-
-    <h2>Words</h2>
-    <label class="field">Title
-      <input id="title-input" type="text" value="NEON VICE" maxlength="24">
-    </label>
-    <label class="field">Subtitle
-      <input id="subtitle-input" type="text" value="VICE CITY &bull; LEONIDA" maxlength="48">
-    </label>
-    <label class="field">Credit
-      <input id="credit-input" type="text" value="A NEON VICE ORIGINAL &mdash; MADE OFFLINE" maxlength="64">
-    </label>
-
-    <h2>Grade</h2>
-    <div class="btn-row">
-      <button type="button" data-grade="sunset" class="active">Sunset</button>
-      <button type="button" data-grade="neon">Neon</button>
-      <button type="button" data-grade="noir">Noir</button>
-      <button type="button" data-grade="vice">Vice</button>
-    </div>
-
-    <h2>Export PNG</h2>
-    <div class="btn-row export-row">
-      <button type="button" data-export="1080x1080">1080 &times; 1080</button>
-      <button type="button" data-export="1080x1350">1080 &times; 1350</button>
-      <button type="button" data-export="1920x1080">1920 &times; 1080</button>
-      <button type="button" data-export="1080x1920">1080 &times; 1920</button>
-    </div>
-    <p id="status" class="status" role="status">Loading&hellip;</p>
+    <p id="statusLine" class="status" role="status">Load a photo to begin &mdash; or try a sample below.</p>
   </section>
 
-  <section class="preview" aria-label="Cover preview">
-    <canvas id="cover-canvas" width="1080" height="1350"></canvas>
-  </section>
+  <aside class="controls">
+    <section class="panel" id="photosPanel">
+      <h2>1 &middot; Your photos</h2>
+      <p class="help">Add up to four photos. Each panel uses one photo slot; one photo can fill every panel.</p>
+      <div class="photo-slots" id="photoSlots"></div>
+      <div class="fill-row">
+        <button id="fillOneBtn" type="button" class="btn small">Fill all panels with photo 1</button>
+        <button id="fillEachBtn" type="button" class="btn small ghost">One photo per panel</button>
+      </div>
+      <div class="sample-row">
+        <span class="row-label">Samples</span>
+        <button id="sampleBoulevardBtn" type="button" class="btn small ghost">Boulevard sunset</button>
+        <button id="sampleCarBtn" type="button" class="btn small ghost">Car at dusk</button>
+      </div>
+    </section>
+
+    <section class="panel" id="cropPanel">
+      <h2>2 &middot; Crop the selected panel</h2>
+      <p class="help" id="cropHelp">Panel 1 &mdash; drag the photo on the canvas or use the sliders.</p>
+      <label class="slider-label">Zoom <span id="zoomVal">100%</span>
+        <input id="zoomSlider" type="range" min="100" max="260" value="100">
+      </label>
+      <label class="slider-label">Move left / right <span id="xVal">0</span>
+        <input id="xSlider" type="range" min="-100" max="100" value="0">
+      </label>
+      <label class="slider-label">Move up / down <span id="yVal">0</span>
+        <input id="ySlider" type="range" min="-100" max="100" value="0">
+      </label>
+      <button id="resetCropBtn" type="button" class="btn small ghost">Reset crop</button>
+    </section>
+
+    <section class="panel" id="captionPanel">
+      <h2>3 &middot; Caption</h2>
+      <label class="field-label">Title
+        <input id="titleInput" type="text" maxlength="24" value="NEON VICE" autocomplete="off">
+      </label>
+      <label class="field-label">Subtitle
+        <input id="subtitleInput" type="text" maxlength="40" value="sunset run" autocomplete="off">
+      </label>
+      <label class="field-label">Tag line
+        <input id="tagInput" type="text" maxlength="48" value="OCEAN DRIVE &bull; 2026" autocomplete="off">
+      </label>
+    </section>
+
+    <section class="panel" id="lookPanel">
+      <h2>4 &middot; Layout &amp; grade</h2>
+      <div class="chip-grid" id="layoutGrid" role="group" aria-label="Layout"></div>
+      <div class="chip-grid" id="gradeGrid" role="group" aria-label="Colour grade"></div>
+      <label class="check-row">
+        <input id="grainToggle" type="checkbox" checked> Film grain &amp; vignette
+      </label>
+      <label class="check-row">
+        <input id="borderToggle" type="checkbox" checked> White panel borders
+      </label>
+    </section>
+
+    <section class="panel" id="exportPanel">
+      <h2>5 &middot; Export</h2>
+      <p class="help">Exports a PNG at the size picked on the left. Your photos never leave this machine.</p>
+      <button id="exportBtn2" type="button" class="btn primary wide">Download PNG cover</button>
+      <p class="fineprint">Neon Vice is original art made in your browser. No logos, artwork or fonts from any game.</p>
+    </section>
+  </aside>
 </main>
 
-<section id="export-view" class="export-view" hidden>
-  <img id="export-img" alt="Cover exported by Neon Vice">
-  <p id="export-meta" class="export-meta"></p>
-</section>
-
 <footer class="foot">
-  Neon Vice &mdash; original cover art, drawn from scratch. No Rockstar logo, artwork or fonts.
+  <span>NEON VICE &middot; offline cover maker</span>
+  <span>1080 &times; 1080 &middot; 1080 &times; 1350 &middot; 1920 &times; 1080</span>
 </footer>
 
-<script src="src/cover.js"></script>
-<script src="src/main.js"></script>
-<script src="src/shots.js"></script>
+<script type="module" src="src/main.js"></script>
 </body>
 </html>
